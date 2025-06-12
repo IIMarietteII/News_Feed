@@ -1,11 +1,22 @@
 <!DOCTYPE html>
 <html>
-<head><meta charset="utf-8"><title>뉴스 요약</title></head>
+<head>
+  <meta charset="utf-8">
+  <title>콘텐츠/미디어 뉴스 모음</title>
+</head>
 <body>
-  <h1>오늘의 콘텐츠/미디어 뉴스 요약</h1>
+  <h1 id="page-title"></h1>
   <div id="app"></div>
 
   <script>
+    // 📆 한국 시간 기준 오늘 날짜 계산
+    const nowKST = new Date(new Date().getTime() + 9 * 60 * 60 * 1000);
+    const month = nowKST.getMonth() + 1;
+    const date = nowKST.getDate();
+    const title = `${month}월 ${date}일의 콘텐츠/미디어 뉴스 모음`;
+    document.getElementById("page-title").innerText = title;
+
+    // 📥 JSON 불러와서 뉴스 렌더링
     fetch("data/news.json")
       .then(res => res.json())
       .then(data => {
