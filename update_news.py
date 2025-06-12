@@ -5,9 +5,9 @@ import os
 
 # 뉴스 RSS 피드 목록
 RSS_FEEDS = {
-    "Global": "https://rss.nytimes.com/services/xml/rss/nyt/MediaandAdvertising.xml",
+    "Global": "https://www.adweek.com/feed/",
     "Korea": "https://www.zdnet.co.kr/news/news.xml",
-    "A+E": "https://www.prnewswire.com/rss/all-a-e-networks-news.rss"
+    "A+E": "https://www.aegm.com/news"
 }
 
 news_data = {}
