@@ -5,7 +5,7 @@
   <title>콘텐츠/미디어 뉴스 모음</title>
   <style>
     body {
-      font-family: NanumGothic;
+      font-family: sans-serif;
       max-width: 800px;
       margin: auto;
       padding: 20px;
@@ -35,21 +35,24 @@
   <div id="app"></div>
 
   <script>
-    // ✅ 정확한 한국 시간으로 날짜 생성
-    const nowUTC = new Date();
-    const nowKST = new Date(nowUTC.getTime() + 9 * 60 * 60 * 1000); // UTC + 9시간
-
-    const month = nowKST.getMonth() + 1;
-    const date = nowKST.getDate();
-    const weekday = nowKST.toLocaleDateString("ko-KR", {
+    // 정확한 한국 날짜 텍스트 생성
+    const kstFormatter = new Intl.DateTimeFormat("ko-KR", {
+      timeZone: "Asia/Seoul",
+      year: "numeric",
+      month: "numeric",
+      day: "numeric",
       weekday: "short",
-      timeZone: "Asia/Seoul"
     });
 
-    const title = `${month}월 ${date}일 (${weekday}) 콘텐츠/미디어 뉴스 모음`;
+    const kstParts = kstFormatter.formatToParts(new Date());
+    const month = kstParts.find(p => p.type === "month").value;
+    const day = kstParts.find(p => p.type === "day").value;
+    const weekday = kstParts.find(p => p.type === "weekday").value;
+
+    const title = `${month}월 ${day}일 (${weekday}) 콘텐츠/미디어 뉴스 모음`;
     document.getElementById("page-title").innerText = title;
 
-    // ✅ 뉴스 JSON 불러와서 렌더링
+    // 뉴스 JSON 불러오기
     fetch("data/news.json")
       .then(res => res.json())
       .then(data => {
