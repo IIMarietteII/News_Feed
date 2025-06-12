@@ -7,7 +7,7 @@ import os
 RSS_FEEDS = {
     "Global": "https://www.adweek.com/feed/",
     "Korea": "https://www.zdnet.co.kr/news/news.xml",
-    "A+E": "https://www.aegm.com/news"
+    "A+E": "https://cdn.feedcontrol.net/10476/18830-Gn9fHlEmknBGj.xml",
 }
 
 news_data = {}
@@ -19,7 +19,7 @@ def fake_summarize(text, length=180):
 for topic, url in RSS_FEEDS.items():
     feed = feedparser.parse(url)
     news_data[topic] = []
-    for entry in feed.entries[:3]:  # 카테고리당 3개 기사
+    for entry in feed.entries[:10]:  # 카테고리당 3개 기사
         summary = fake_summarize(entry.get("summary", entry.get("description", "")))
         news_data[topic].append({
             "title": entry.title,
