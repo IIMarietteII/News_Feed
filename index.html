@@ -1,22 +1,56 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
-  <meta charset="utf-8">
+  <meta charset="UTF-8" />
   <title>콘텐츠/미디어 뉴스 모음</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      max-width: 800px;
+      margin: auto;
+      padding: 20px;
+    }
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+    }
+    h2 {
+      font-size: 1.4rem;
+      margin-top: 2rem;
+    }
+    h3 {
+      margin: 0.5rem 0 0.2rem;
+    }
+    p {
+      margin: 0 0 1rem;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #ccc;
+    }
+  </style>
 </head>
 <body>
-  <h1 id="page-title"></h1>
+  <h1 id="page-title">콘텐츠/미디어 뉴스 모음</h1>
   <div id="app"></div>
 
   <script>
-const weekday = dateObj.toLocaleDateString("ko-KR", {
-  weekday: "short",
-  timeZone: "Asia/Seoul"
-}); // "월", "화", 등
+    // ✅ 한국 기준 날짜로 제목 출력
+    const kstDate = new Date().toLocaleString("ko-KR", {
+      timeZone: "Asia/Seoul"
+    });
+    const dateObj = new Date(kstDate);
+    const month = dateObj.getMonth() + 1;
+    const date = dateObj.getDate();
+    const weekday = dateObj.toLocaleDateString("ko-KR", {
+      weekday: "short",
+      timeZone: "Asia/Seoul"
+    });
 
-const title = `${month}월 ${date}일 (${weekday}) 콘텐츠/미디어 뉴스 모음`;
+    const title = `${month}월 ${date}일 (${weekday}) 콘텐츠/미디어 뉴스 모음`;
+    document.getElementById("page-title").innerText = title;
 
-    // 📥 JSON 불러와서 뉴스 렌더링
+    // ✅ 뉴스 불러오기
     fetch("data/news.json")
       .then(res => res.json())
       .then(data => {
@@ -33,6 +67,11 @@ const title = `${month}월 ${date}일 (${weekday}) 콘텐츠/미디어 뉴스 �
           });
           app.appendChild(section);
         }
+      })
+      .catch(err => {
+        document.getElementById("app").innerHTML =
+          "<p>뉴스 데이터를 불러오지 못했습니다.</p>";
+        console.error("뉴스 로딩 오류:", err);
       });
   </script>
 </body>
