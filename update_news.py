@@ -1,11 +1,9 @@
 import feedparser
-import google.generativeai as genai
-import os, json
+import json
 from datetime import datetime
+import os
 
-genai.configure(api_key=os.environ["GEMINI_API_KEY"])
-model = genai.GenerativeModel("gemini-pro")
-
+# 뉴스 RSS 피드 목록
 RSS_FEEDS = {
     "Global": "https://rss.nytimes.com/services/xml/rss/nyt/MediaandAdvertising.xml",
     "Korea": "https://www.zdnet.co.kr/news/news.xml",
@@ -14,16 +12,15 @@ RSS_FEEDS = {
 
 news_data = {}
 
-def summarize(text):
-    prompt = f"다음 기사 내용을 한국어로 3줄로 요약해줘:\n{text}"
-    response = model.generate_content(prompt)
-    return response.text.strip()
+def fake_summarize(text, length=180):
+    """요약 대신 앞부분만 잘라서 보여줍니다."""
+    return text.strip().replace("\n", " ")[:length] + "..."
 
 for topic, url in RSS_FEEDS.items():
-    news_data[topic] = []
     feed = feedparser.parse(url)
-    for entry in feed.entries[:3]:
-        summary = summarize(entry.description)
+    news_data[topic] = []
+    for entry in feed.entries[:3]:  # 카테고리당 3개 기사
+        summary = fake_summarize(entry.get("summary", entry.get("description", "")))
         news_data[topic].append({
             "title": entry.title,
             "summary": summary,
@@ -31,5 +28,7 @@ for topic, url in RSS_FEEDS.items():
             "published": entry.get("published", datetime.now().isoformat())
         })
 
+# news.json 파일 저장
+os.makedirs("data", exist_ok=True)
 with open("data/news.json", "w", encoding="utf-8") as f:
     json.dump(news_data, f, indent=2, ensure_ascii=False)
