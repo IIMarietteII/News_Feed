@@ -2,40 +2,106 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <title>콘텐츠/미디어 뉴스 모음</title>
+  <title>[에이앤이 글로벌 미디어] 업계 동향</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
+    body, table, td, p, a, li, blockquote {
+      -webkit-text-size-adjust: 100%;
+      -ms-text-size-adjust: 100%;
+    }
     body {
-      font-family: sans-serif;
-      max-width: 800px;
-      margin: auto;
+      margin: 0;
+      padding: 0;
+      font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+      line-height: 1.6;
+      color: #333333;
+      background-color: #f4f4f4;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #ffffff;
       padding: 20px;
     }
-    h1 {
-      font-size: 1.8rem;
-      margin-bottom: 1rem;
+    .header {
+      padding: 20px 0;
+      text-align: center;
+      border-bottom: 3px solid #2c64b4;
     }
-    h2 {
-      font-size: 1.4rem;
-      margin-top: 2rem;
+    .header h1 {
+      color: #2c64b4;
+      margin: 0;
+      font-size: 24px;
     }
-    h3 {
-      margin: 0.5rem 0 0.2rem;
+    .date {
+      color: #666666;
+      font-size: 14px;
+      margin-top: 5px;
     }
-    p {
-      margin: 0 0 1rem;
+    .section {
+      padding: 20px 0;
+      border-bottom: 1px solid #eeeeee;
     }
-    hr {
-      border: none;
-      border-top: 1px solid #ccc;
+    .section-title {
+      color: #2c64b4;
+      font-size: 18px;
+      margin-top: 0;
+      margin-bottom: 15px;
+      font-weight: bold;
+    }
+    .article {
+      margin-bottom: 20px;
+    }
+    .article-title {
+      color: #333333;
+      font-size: 16px;
+      font-weight: bold;
+      margin-top: 0;
+      margin-bottom: 10px;
+    }
+    .article-summary {
+      color: #555555;
+      font-size: 14px;
+      margin-top: 0;
+      margin-bottom: 10px;
+      line-height: 1.6;
+    }
+    .article-link {
+      color: #2c64b4;
+      text-decoration: none;
+      font-size: 13px;
+    }
+    .footer {
+      padding: 20px 0;
+      text-align: center;
+      color: #999999;
+      font-size: 12px;
+    }
+    .footer a {
+      color: #2c64b4;
+      text-decoration: none;
+    }
+    @media only screen and (max-width: 620px) {
+      .container {
+        width: 100% !important;
+      }
     }
   </style>
 </head>
 <body>
-  <h1 id="page-title">콘텐츠/미디어 뉴스 모음</h1>
-  <div id="app"></div>
-
+  <div class="container">
+    <div class="header">
+      <h1>[에이앤이 글로벌 미디어] 업계 동향</h1>
+      <div class="date" id="page-date"></div>
+    </div>
+    <div id="app"></div>
+    <div class="footer">
+      <p>더 자세한 정보가 필요하시거나 특정 주제에 대한 심층 분석을 원하시면 홍보팀(yura.choi@aegm.com)으로 연락주세요.</p>
+      <p>© 2025 [에이앤이 글로벌 미디어 코리아]. All rights reserved.</p>
+    </div>
+  </div>
   <script>
-    // 정확한 한국 날짜 텍스트 생성
+    // 정확한 한국 시간 기준 날짜 출력
     const kstFormatter = new Intl.DateTimeFormat("ko-KR", {
       timeZone: "Asia/Seoul",
       year: "numeric",
@@ -43,28 +109,29 @@
       day: "numeric",
       weekday: "short",
     });
-
     const kstParts = kstFormatter.formatToParts(new Date());
+    const year = kstParts.find(p => p.type === "year").value;
     const month = kstParts.find(p => p.type === "month").value;
     const day = kstParts.find(p => p.type === "day").value;
     const weekday = kstParts.find(p => p.type === "weekday").value;
+    document.getElementById("page-date").innerText = `${year}년 ${month}월 ${day}일 (${weekday})`;
 
-    const title = `${month}월 ${day}일 (${weekday}) 콘텐츠/미디어 뉴스 모음`;
-    document.getElementById("page-title").innerText = title;
-
-    // 뉴스 JSON 불러오기
+    // 뉴스 로딩 및 렌더링
     fetch("data/news.json")
       .then(res => res.json())
       .then(data => {
         const app = document.getElementById("app");
         for (const [category, articles] of Object.entries(data)) {
-          const section = document.createElement("section");
-          section.innerHTML = `<h2>${category}</h2>`;
+          const section = document.createElement("div");
+          section.className = "section";
+          section.innerHTML = `<h2 class="section-title">${category}</h2>`;
           articles.forEach(article => {
             section.innerHTML += `
-              <h3><a href="${article.link}" target="_blank">${article.title}</a></h3>
-              <p>${article.summary}</p>
-              <hr>
+              <div class="article">
+                <h3 class="article-title">${article.title}</h3>
+                <p class="article-summary">${article.summary}</p>
+                <a class="article-link" href="${article.link}" target="_blank">원문 링크 →</a>
+              </div>
             `;
           });
           app.appendChild(section);
