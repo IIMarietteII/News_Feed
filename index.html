@@ -9,12 +9,12 @@
   <div id="app"></div>
 
   <script>
-    // 📆 한국 시간 기준 오늘 날짜 계산
-    const nowKST = new Date(new Date().getTime() + 9 * 60 * 60 * 1000);
-    const month = nowKST.getMonth() + 1;
-    const date = nowKST.getDate();
-    const title = `${month}월 ${date}일의 콘텐츠/미디어 뉴스 모음`;
-    document.getElementById("page-title").innerText = title;
+const weekday = dateObj.toLocaleDateString("ko-KR", {
+  weekday: "short",
+  timeZone: "Asia/Seoul"
+}); // "월", "화", 등
+
+const title = `${month}월 ${date}일 (${weekday}) 콘텐츠/미디어 뉴스 모음`;
 
     // 📥 JSON 불러와서 뉴스 렌더링
     fetch("data/news.json")
