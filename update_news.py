@@ -6,7 +6,7 @@ import os
 # 뉴스 RSS 피드 목록
 RSS_FEEDS = {
     "Global": "https://www.adweek.com/feed/",
-    "Korea": "https://www.zdnet.co.kr/news/news.xml",
+    "Korea": "http://www.ddaily.co.kr/rss/rss_all.xml",
     "A+E": "https://cdn.feedcontrol.net/10476/18830-Gn9fHlEmknBGj.xml",
 }
 
