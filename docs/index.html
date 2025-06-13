@@ -3,115 +3,68 @@
 <head>
   <meta charset="UTF-8" />
   <title>뉴스 기사 선택</title>
-  
-<style>
-  body, table, td, p, a, li, blockquote {
-    -webkit-text-size-adjust: 100%;
-    -ms-text-size-adjust: 100%;
-  }
-  body {
-    margin: 0;
-    padding: 0;
-    font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
-    line-height: 1.6;
-    color: #333333;
-    background-color: #f4f4f4;
-  }
-  .container {
-    max-width: 600px;
-    margin: 0 auto;
-    background-color: #ffffff;
-    padding: 20px;
-  }
-  .header {
-    padding: 20px 0;
-    text-align: center;
-    border-bottom: 3px solid #2c64b4;
-  }
-  .header h1 {
-    color: #2c64b4;
-    margin: 0;
-    font-size: 24px;
-  }
-  .date {
-    color: #666666;
-    font-size: 14px;
-    margin-top: 5px;
-  }
-  .section {
-    padding: 20px 0;
-    border-bottom: 1px solid #eeeeee;
-  }
-  .section-title {
-    color: #2c64b4;
-    font-size: 18px;
-    margin-top: 0;
-    margin-bottom: 15px;
-    font-weight: bold;
-  }
-  .article {
-    margin-bottom: 20px;
-  }
-  .article-title {
-    color: #333333;
-    font-size: 16px;
-    font-weight: bold;
-    margin-top: 0;
-    margin-bottom: 10px;
-  }
-  .article-summary {
-    color: #555555;
-    font-size: 14px;
-    margin-top: 0;
-    margin-bottom: 10px;
-    line-height: 1.6;
-  }
-  .article-link {
-    color: #2c64b4;
-    text-decoration: none;
-    font-size: 13px;
-  }
-  .footer {
-    padding: 20px 0;
-    text-align: center;
-    color: #999999;
-    font-size: 12px;
-  }
-  .footer a {
-    color: #2c64b4;
-    text-decoration: none;
-  }
-  @media only screen and (max-width: 620px) {
-    .container {
-      width: 100% !important;
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+      line-height: 1.6;
+      background-color: #f4f4f4;
+      color: #333;
     }
-  }
-  button {
-    padding: 10px 15px;
-    font-size: 1rem;
-    background-color: #2c64b4;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  button:hover {
-    background-color: #1b4c91;
-  }
-</style>
-
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #2c64b4;
+    }
+    .article {
+      margin: 10px 0;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 10px;
+    }
+    button {
+      margin-top: 20px;
+      display: block;
+      width: 100%;
+      padding: 10px;
+      background-color: #2c64b4;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #1b4c91;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
-    <div class="header">
-      <h1>뉴스 기사 선택</h1>
-    </div>
+    <h1 id="dynamic-title">뉴스 기사 선택</h1>
     <div id="articles">불러오는 중...</div>
-    <div style="text-align: center; margin-top: 20px;">
-      <button id="view-newsletter">선택한 기사로 뉴스레터 보기</button>
-    </div>
+    <button id="view-newsletter">선택한 기사로 뉴스레터 만들기</button>
   </div>
+
   <script>
+    // ✅ 동적으로 오늘 날짜 기반 제목 생성
+    const kstFormatter = new Intl.DateTimeFormat("ko-KR", {
+      timeZone: "Asia/Seoul",
+      year: "numeric",
+      month: "numeric",
+      day: "numeric",
+      weekday: "short",
+    });
+    const parts = kstFormatter.formatToParts(new Date());
+    const dateStr = `${parts.find(p => p.type === "month").value}월 ${parts.find(p => p.type === "day").value}일 ${parts.find(p => p.type === "weekday").value}`;
+    document.getElementById("dynamic-title").innerText = `${dateStr} 뉴스 기사 선택`;
+
+    // ✅ 뉴스 기사 로딩
     let selected = [];
 
     fetch('data/articles.json')
@@ -126,8 +79,8 @@
           div.innerHTML = `
             <label>
               <input type="checkbox" value="${id}">
-              <strong>${article.title}</strong> — <em>${article.source}</em><br>
-              <small>${article.published}</small>
+              <strong>${article.title}</strong><br>
+              <em>${article.source}</em> | <small>${article.published}</small>
             </label>
           `;
           container.appendChild(div);
@@ -145,6 +98,7 @@
         console.error(err);
       });
 
+    // ✅ 뉴스레터 만들기 버튼 동작
     document.getElementById('view-newsletter').addEventListener('click', () => {
       if (selected.length === 0) {
         alert("최소 하나의 기사를 선택해주세요.");
