@@ -3,7 +3,7 @@ name: Update RSS Articles
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 2 * * *'  # Every day at 2am UTC
+    - cron: '0 2 * * *'
 
 jobs:
   build:
@@ -27,7 +27,7 @@ jobs:
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
-          git add data/articles.json
+          git add docs/data/articles.json
           git commit -m "Update articles" || echo "No changes"
           git push
         env:
