@@ -13,7 +13,7 @@
   <script>
     let selected = [];
 
-    fetch('/News_Feed/data/articles.json')
+  fetch('data/articles.json')
       .then(res => res.json())
       .then(data => {
         const container = document.getElementById('articles');
