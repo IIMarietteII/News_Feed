@@ -4,103 +4,68 @@
   <meta charset="UTF-8" />
   <title>[에이앤이 글로벌 미디어] 업계 동향</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-<style>
-  body, table, td, p, a, li, blockquote {
-    -webkit-text-size-adjust: 100%;
-    -ms-text-size-adjust: 100%;
-  }
-  body {
-    margin: 0;
-    padding: 0;
-    font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
-    line-height: 1.6;
-    color: #333333;
-    background-color: #f4f4f4;
-  }
-  .container {
-    max-width: 600px;
-    margin: 0 auto;
-    background-color: #ffffff;
-    padding: 20px;
-  }
-  .header {
-    padding: 20px 0;
-    text-align: center;
-    border-bottom: 3px solid #2c64b4;
-  }
-  .header h1 {
-    color: #2c64b4;
-    margin: 0;
-    font-size: 24px;
-  }
-  .date {
-    color: #666666;
-    font-size: 14px;
-    margin-top: 5px;
-  }
-  .section {
-    padding: 20px 0;
-    border-bottom: 1px solid #eeeeee;
-  }
-  .section-title {
-    color: #2c64b4;
-    font-size: 18px;
-    margin-top: 0;
-    margin-bottom: 15px;
-    font-weight: bold;
-  }
-  .article {
-    margin-bottom: 20px;
-  }
-  .article-title {
-    color: #333333;
-    font-size: 16px;
-    font-weight: bold;
-    margin-top: 0;
-    margin-bottom: 10px;
-  }
-  .article-summary {
-    color: #555555;
-    font-size: 14px;
-    margin-top: 0;
-    margin-bottom: 10px;
-    line-height: 1.6;
-  }
-  .article-link {
-    color: #2c64b4;
-    text-decoration: none;
-    font-size: 13px;
-  }
-  .footer {
-    padding: 20px 0;
-    text-align: center;
-    color: #999999;
-    font-size: 12px;
-  }
-  .footer a {
-    color: #2c64b4;
-    text-decoration: none;
-  }
-  @media only screen and (max-width: 620px) {
-    .container {
-      width: 100% !important;
+  <style>
+    body {
+      font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+      background-color: #f4f4f4;
+      color: #333;
+      margin: 0;
+      padding: 0;
     }
-  }
-  button {
-    padding: 10px 15px;
-    font-size: 1rem;
-    background-color: #2c64b4;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  button:hover {
-    background-color: #1b4c91;
-  }
-</style>
-
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #fff;
+      padding: 20px;
+    }
+    .header {
+      text-align: center;
+      padding-bottom: 10px;
+      border-bottom: 3px solid #2c64b4;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 24px;
+      color: #2c64b4;
+    }
+    .date {
+      font-size: 14px;
+      color: #666;
+      margin-top: 5px;
+    }
+    .section {
+      margin-top: 30px;
+    }
+    .section-title {
+      font-size: 18px;
+      color: #2c64b4;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 5px;
+    }
+    .article {
+      margin-bottom: 20px;
+    }
+    .article-title {
+      font-weight: bold;
+      font-size: 16px;
+      margin: 0;
+    }
+    .article-summary {
+      font-size: 14px;
+      color: #555;
+    }
+    .article-link {
+      font-size: 13px;
+      color: #2c64b4;
+      text-decoration: none;
+    }
+    .footer {
+      font-size: 12px;
+      text-align: center;
+      margin-top: 30px;
+      color: #999;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
@@ -122,12 +87,9 @@
       day: "numeric",
       weekday: "short",
     });
-    const kstParts = kstFormatter.formatToParts(new Date());
-    const year = kstParts.find(p => p.type === "year").value;
-    const month = kstParts.find(p => p.type === "month").value;
-    const day = kstParts.find(p => p.type === "day").value;
-    const weekday = kstParts.find(p => p.type === "weekday").value;
-    document.getElementById("page-date").innerText = `${year}년 ${month}월 ${day}일 (${weekday})`;
+    const parts = kstFormatter.formatToParts(new Date());
+    const formatted = `${parts.find(p => p.type === "year").value}년 ${parts.find(p => p.type === "month").value}월 ${parts.find(p => p.type === "day").value}일 (${parts.find(p => p.type === "weekday").value})`;
+    document.getElementById("page-date").innerText = formatted;
 
     const params = new URLSearchParams(location.search);
     const ids = (params.get('ids') || '').split(',').map(decodeURIComponent);
@@ -135,27 +97,36 @@
     fetch('data/articles.json')
       .then(res => res.json())
       .then(data => {
-        const app = document.getElementById("app");
-        const filtered = data.filter(article =>
-          ids.includes(article.id || article.link)
-        );
-        if (filtered.length === 0) {
-          app.innerHTML = "<p>선택된 뉴스가 없습니다.</p>";
-          return;
-        }
-        const section = document.createElement("div");
-        section.className = "section";
-        section.innerHTML = '<h2 class="section-title">뉴스</h2>';
+        const filtered = data.filter(article => ids.includes(article.id || article.link));
+        const grouped = {
+          Korea: [],
+          Global: [],
+          "A+E": []
+        };
         filtered.forEach(article => {
-          section.innerHTML += `
-            <div class="article">
-              <h3 class="article-title">${article.title}</h3>
-              <p class="article-summary">${article.summary}</p>
-              <a class="article-link" href="${article.link}" target="_blank">원문 링크 →</a>
-            </div>
-          `;
+          const group = grouped[article.source] || [];
+          group.push(article);
+          grouped[article.source] = group;
         });
-        app.appendChild(section);
+
+        const app = document.getElementById("app");
+
+        Object.entries(grouped).forEach(([category, articles]) => {
+          if (articles.length === 0) return;
+          const section = document.createElement("div");
+          section.className = "section";
+          section.innerHTML = `<h2 class="section-title">${category}</h2>`;
+          articles.forEach(article => {
+            section.innerHTML += `
+              <div class="article">
+                <h3 class="article-title">${article.title}</h3>
+                <p class="article-summary">${article.summary}</p>
+                <a class="article-link" href="${article.link}" target="_blank">원문 링크 →</a>
+              </div>
+            `;
+          });
+          app.appendChild(section);
+        });
       })
       .catch(err => {
         console.error("뉴스 로딩 오류:", err);
