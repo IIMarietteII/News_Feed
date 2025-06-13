@@ -2,48 +2,150 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <title>뉴스레터 보기</title>
-  <link rel="stylesheet" href="common.css">
+  <title>[에이앤이 글로벌 미디어] 업계 동향</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body, table, td, p, a, li, blockquote {
+      -webkit-text-size-adjust: 100%;
+      -ms-text-size-adjust: 100%;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+      line-height: 1.6;
+      color: #333333;
+      background-color: #f4f4f4;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #ffffff;
+      padding: 20px;
+    }
+    .header {
+      padding: 20px 0;
+      text-align: center;
+      border-bottom: 3px solid #2c64b4;
+    }
+    .header h1 {
+      color: #2c64b4;
+      margin: 0;
+      font-size: 24px;
+    }
+    .date {
+      color: #666666;
+      font-size: 14px;
+      margin-top: 5px;
+    }
+    .section {
+      padding: 20px 0;
+      border-bottom: 1px solid #eeeeee;
+    }
+    .section-title {
+      color: #2c64b4;
+      font-size: 18px;
+      margin-top: 0;
+      margin-bottom: 15px;
+      font-weight: bold;
+    }
+    .article {
+      margin-bottom: 20px;
+    }
+    .article-title {
+      color: #333333;
+      font-size: 16px;
+      font-weight: bold;
+      margin-top: 0;
+      margin-bottom: 10px;
+    }
+    .article-summary {
+      color: #555555;
+      font-size: 14px;
+      margin-top: 0;
+      margin-bottom: 10px;
+      line-height: 1.6;
+    }
+    .article-link {
+      color: #2c64b4;
+      text-decoration: none;
+      font-size: 13px;
+    }
+    .footer {
+      padding: 20px 0;
+      text-align: center;
+      color: #999999;
+      font-size: 12px;
+    }
+    .footer a {
+      color: #2c64b4;
+      text-decoration: none;
+    }
+    @media only screen and (max-width: 620px) {
+      .container {
+        width: 100% !important;
+      }
+    }
+  </style>
 </head>
 <body>
-  <h1>📰 선택한 뉴스레터</h1>
-  <div id="newsletter">불러오는 중...</div>
-
+  <div class="container">
+    <div class="header">
+      <h1>[에이앤이 글로벌 미디어] 업계 동향</h1>
+      <div class="date" id="page-date"></div>
+    </div>
+    <div id="app"></div>
+    <div class="footer">
+      <p>더 자세한 정보가 필요하시거나 특정 주제에 대한 심층 분석을 원하시면 홍보팀(yura.choi@aegm.com)으로 연락주세요.</p>
+      <p>© 2025 [에이앤이 글로벌 미디어 코리아]. All rights reserved.</p>
+    </div>
+  </div>
   <script>
+    const kstFormatter = new Intl.DateTimeFormat("ko-KR", {
+      timeZone: "Asia/Seoul",
+      year: "numeric",
+      month: "numeric",
+      day: "numeric",
+      weekday: "short",
+    });
+    const kstParts = kstFormatter.formatToParts(new Date());
+    const year = kstParts.find(p => p.type === "year").value;
+    const month = kstParts.find(p => p.type === "month").value;
+    const day = kstParts.find(p => p.type === "day").value;
+    const weekday = kstParts.find(p => p.type === "weekday").value;
+    document.getElementById("page-date").innerText = `${year}년 ${month}월 ${day}일 (${weekday})`;
+
     const params = new URLSearchParams(location.search);
     const ids = (params.get('ids') || '').split(',').map(decodeURIComponent);
-    console.log("선택된 ID 목록:", ids);
 
     fetch('data/articles.json')
       .then(res => res.json())
       .then(data => {
+        const app = document.getElementById("app");
         const filtered = data.filter(article =>
           ids.includes(article.id || article.link)
         );
-
-        const container = document.getElementById('newsletter');
-        container.innerHTML = '';
-
         if (filtered.length === 0) {
-          container.innerHTML = "<p>선택된 기사가 없습니다.</p>";
+          app.innerHTML = "<p>선택된 뉴스가 없습니다.</p>";
           return;
         }
-
+        const section = document.createElement("div");
+        section.className = "section";
+        section.innerHTML = '<h2 class="section-title">뉴스</h2>';
         filtered.forEach(article => {
-          const div = document.createElement('div');
-          div.className = "article";
-          div.innerHTML = `
-            <h2><a href="${article.link}" target="_blank">${article.title}</a></h2>
-            <p><em>${article.source}</em> | <small>${article.published}</small></p>
-            <p>${article.summary}</p>
-            <hr>
+          section.innerHTML += `
+            <div class="article">
+              <h3 class="article-title">${article.title}</h3>
+              <p class="article-summary">${article.summary}</p>
+              <a class="article-link" href="${article.link}" target="_blank">원문 링크 →</a>
+            </div>
           `;
-          container.appendChild(div);
         });
+        app.appendChild(section);
       })
       .catch(err => {
-        console.error("에러 발생:", err);
-        document.getElementById('newsletter').innerText = '뉴스레터 불러오기 실패 😢';
+        console.error("뉴스 로딩 오류:", err);
+        document.getElementById("app").innerHTML = "<p>뉴스 데이터를 불러오지 못했습니다.</p>";
       });
   </script>
 </body>
