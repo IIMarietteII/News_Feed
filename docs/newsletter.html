@@ -13,7 +13,7 @@
     const params = new URLSearchParams(location.search);
     const ids = params.get('ids')?.split(',') || [];
 
-    fetch('../data/articles.json')
+  fetch('data/articles.json')
       .then(res => res.json())
       .then(data => {
         const filtered = data.filter(article => ids.includes(encodeURIComponent(article.id)));
