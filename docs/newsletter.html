@@ -6,18 +6,33 @@
   <title>[에이앤이 글로벌 미디어] 업계 동향</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
-<body style="font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif; background-color: #f4f4f4; color: #333; margin: 0; padding: 0;">
-  <div style="max-width: 600px; margin: 0 auto; background-color: #fff; padding: 20px;">
-    <div style="text-align: center; padding-bottom: 10px; border-bottom: 3px solid #2c64b4;">
-      <h1 style="margin: 0; font-size: 24px; color: #2c64b4;">[에이앤이 글로벌 미디어] 업계 동향</h1>
-      <div id="page-date" style="font-size: 14px; color: #666; margin-top: 5px;"></div>
-    </div>
-    <div id="app"></div>
-    <div style="font-size: 12px; text-align: center; margin-top: 30px; color: #999;">
-      <p>더 자세한 정보가 필요하시거나 특정 주제에 대한 심층 분석을 원하시면 홍보팀(yura.choi@aegm.com)으로 연락주세요.</p>
-      <p>© 2025 [에이앤이 글로벌 미디어 코리아]. All rights reserved.</p>
-    </div>
-  </div>
+<body style="margin:0; padding:0;">
+  <table width="100%" bgcolor="#f4f4f4" cellpadding="0" cellspacing="0" border="0">
+    <tr>
+      <td align="center">
+        <table width="600" bgcolor="#ffffff" cellpadding="20" cellspacing="0" border="0" style="margin: 0 auto;">
+          <tr>
+            <td>
+              <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td align="center" style="border-bottom: 3px solid #2c64b4; padding-bottom: 10px;">
+                    <h1 style="margin: 0; font-size: 24px; color: #2c64b4;">[에이앤이 글로벌 미디어] 업계 동향</h1>
+                    <div id="page-date" style="font-size: 14px; color: #666; margin-top: 5px;"></div>
+                  </td>
+                </tr>
+              </table>
+              <div id="app"></div>
+              <div style="font-size: 12px; text-align: center; margin-top: 30px; color: #999;">
+                <p>더 자세한 정보가 필요하시거나 특정 주제에 대한 심층 분석을 원하시면 홍보팀(yura.choi@aegm.com)으로 연락주세요.</p>
+                <p>© 2025 [에이앤이 글로벌 미디어 코리아]. All rights reserved.</p>
+              </div>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+
   <script>
     const kstFormatter = new Intl.DateTimeFormat("ko-KR", {
       timeZone: "Asia/Seoul",
@@ -52,11 +67,9 @@
 
         Object.entries(grouped).forEach(([category, articles]) => {
           if (articles.length === 0) return;
-          const section = document.createElement("div");
-          section.setAttribute("style", "margin-top: 30px;");
-          section.innerHTML = `<h2 style='font-size: 18px; color: #2c64b4; border-bottom: 1px solid #ccc; padding-bottom: 5px;'>${category}</h2>`;
+          let html = `<h2 style='font-size: 18px; color: #2c64b4; border-bottom: 1px solid #ccc; padding-bottom: 5px;'>${category}</h2>`;
           articles.forEach(article => {
-            section.innerHTML += `
+            html += `
               <div style="margin-bottom: 20px;">
                 <h3 style="font-weight: bold; font-size: 16px; margin: 0;">${article.title}</h3>
                 <p style="font-size: 14px; color: #555;">${article.summary}</p>
@@ -64,6 +77,8 @@
               </div>
             `;
           });
+          const section = document.createElement("div");
+          section.innerHTML = html;
           app.appendChild(section);
         });
       })
