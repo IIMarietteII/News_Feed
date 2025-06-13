@@ -1,52 +1,7 @@
 <!DOCTYPE html>
-<html lang="ko">
-<head>
-  <meta charset="UTF-8" />
-  <title>뉴스 피드 선택</title>
-  <link rel="stylesheet" href="common.css">
-</head>
-<body>
-  <h1>🗞️ 뉴스 기사 선택</h1>
-  <div id="articles">불러오는 중...</div>
-  <button id="view-newsletter">선택한 기사로 뉴스레터 보기</button>
-
-  <script>
-    let selected = [];
-
-    fetch('../data/articles.json')
-      .then(res => res.json())
-      .then(data => {
-        const container = document.getElementById('articles');
-        container.innerHTML = '';
-        data.forEach(article => {
-          const id = encodeURIComponent(article.id);
-          const div = document.createElement('div');
-          div.innerHTML = \`
-            <label>
-              <input type="checkbox" value="\${id}">
-              <strong>\${article.title}</strong> — <em>\${article.source}</em><br>
-              <small>\${article.published}</small>
-            </label>
-            <hr>
-          \`;
-          container.appendChild(div);
-        });
-
-        container.querySelectorAll('input[type=checkbox]').forEach(input => {
-          input.addEventListener('change', e => {
-            if (e.target.checked) selected.push(e.target.value);
-            else selected = selected.filter(id => id !== e.target.value);
-          });
-        });
-      });
-
-    document.getElementById('view-newsletter').addEventListener('click', () => {
-      if (selected.length === 0) {
-        alert("최소 하나의 기사를 선택해주세요.");
-        return;
-      }
-      location.href = \`newsletter.html?ids=\${selected.join(',')}\`;
-    });
-  </script>
-</body>
+<html>
+  <head><title>News Feed</title></head>
+  <body>
+    <h1>✅ GitHub Pages에서 이 페이지가 보이면 성공!</h1>
+  </body>
 </html>
