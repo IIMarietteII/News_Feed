@@ -1,39 +1,86 @@
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <title>[에이앤이 글로벌 미디어] 업계 동향</title>
+  <title>[에이앤이 글로벌 미디어] 이번 주 미디어 업계 동향</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+      background-color: #f4f4f4;
+      color: #333;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #fff;
+      padding: 20px;
+    }
+    .header {
+      text-align: center;
+      padding-bottom: 10px;
+      border-bottom: 3px solid #2c64b4;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 24px;
+      color: #2c64b4;
+    }
+    .date {
+      font-size: 14px;
+      color: #666;
+      margin-top: 5px;
+    }
+    .section {
+      margin-top: 30px;
+    }
+    .section-title {
+      font-size: 18px;
+      color: #2c64b4;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 5px;
+    }
+    .article {
+      margin-bottom: 20px;
+    }
+    .article-title {
+      font-weight: bold;
+      font-size: 16px;
+      margin: 0;
+    }
+    .article-summary {
+      font-size: 14px;
+      color: #555;
+    }
+    .article-link {
+      font-size: 13px;
+      color: #2c64b4;
+      text-decoration: none;
+    }
+    .footer {
+      font-size: 12px;
+      text-align: center;
+      margin-top: 30px;
+      color: #999;
+    }
+  </style>
 </head>
-<body style="margin:0; padding:0;">
-  <table width="100%" bgcolor="#f4f4f4" cellpadding="0" cellspacing="0" border="0">
-    <tr>
-      <td align="center">
-        <table width="600" bgcolor="#ffffff" cellpadding="20" cellspacing="0" border="0" style="margin: 0 auto;">
-          <tr>
-            <td>
-              <table width="100%" cellpadding="0" cellspacing="0" border="0">
-                <tr>
-                  <td align="center" style="border-bottom: 3px solid #2c64b4; padding-bottom: 10px;">
-                    <h1 style="margin: 0; font-size: 24px; color: #2c64b4;">[에이앤이 글로벌 미디어] 업계 동향</h1>
-                    <div id="page-date" style="font-size: 14px; color: #666; margin-top: 5px;"></div>
-                  </td>
-                </tr>
-              </table>
-              <div id="app"></div>
-              <div style="font-size: 12px; text-align: center; margin-top: 30px; color: #999;">
-                <p>더 자세한 정보가 필요하시거나 특정 주제에 대한 심층 분석을 원하시면 홍보팀(yura.choi@aegm.com)으로 연락주세요.</p>
-                <p>© 2025 [에이앤이 글로벌 미디어 코리아]. All rights reserved.</p>
-              </div>
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-  </table>
-
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>[에이앤이 글로벌 미디어] 이번 주 미디어 업계 동향</h1>
+      <div class="date" id="page-date"></div>
+    </div>
+    <div id="app"></div>
+    <div class="footer">
+      <p>더 자세한 정보가 필요하시거나 특정 주제에 대한 심층 분석을 원하시면 홍보팀(yura.choi@aegm.com)으로 연락주세요.</p>
+      <p>© 2025 [에이앤이 글로벌 미디어 코리아]. All rights reserved.</p>
+    </div>
+  </div>
   <script>
+    // 날짜 표시
     const kstFormatter = new Intl.DateTimeFormat("ko-KR", {
       timeZone: "Asia/Seoul",
       year: "numeric",
@@ -45,40 +92,40 @@
     const formatted = `${parts.find(p => p.type === "year").value}년 ${parts.find(p => p.type === "month").value}월 ${parts.find(p => p.type === "day").value}일 (${parts.find(p => p.type === "weekday").value})`;
     document.getElementById("page-date").innerText = formatted;
 
+    // 선택한 기사 ID 가져오기
     const params = new URLSearchParams(location.search);
     const ids = (params.get('ids') || '').split(',').map(decodeURIComponent);
 
     fetch('data/articles.json')
       .then(res => res.json())
       .then(data => {
-        const filtered = data.filter(article => ids.includes(article.id || article.link));
-        const grouped = {
-          Korea: [],
-          Global: [],
-          "A+E": []
-        };
+        const filtered = data.filter(article =>
+          ids.includes(article.id || article.link)
+        );
+
+        const grouped = {};
         filtered.forEach(article => {
-          const group = grouped[article.source] || [];
-          group.push(article);
-          grouped[article.source] = group;
+          const source = article.source || "기타";
+          if (!grouped[source]) grouped[source] = [];
+          grouped[source].push(article);
         });
 
         const app = document.getElementById("app");
 
-        Object.entries(grouped).forEach(([category, articles]) => {
+        Object.entries(grouped).forEach(([source, articles]) => {
           if (articles.length === 0) return;
-          let html = `<h2 style='font-size: 18px; color: #2c64b4; border-bottom: 1px solid #ccc; padding-bottom: 5px;'>${category}</h2>`;
+          const section = document.createElement("div");
+          section.className = "section";
+          section.innerHTML = `<h2 class="section-title">${source}</h2>`;
           articles.forEach(article => {
-            html += `
-              <div style="margin-bottom: 20px;">
-                <h3 style="font-weight: bold; font-size: 16px; margin: 0;">${article.title}</h3>
-                <p style="font-size: 14px; color: #555;">${article.summary}</p>
-                <a style="font-size: 13px; color: #2c64b4; text-decoration: none;" href="${article.link}" target="_blank">원문 링크 →</a>
+            section.innerHTML += `
+              <div class="article">
+                <h3 class="article-title">${article.title}</h3>
+                <p class="article-summary">${article.summary}</p>
+                <a class="article-link" href="${article.link}" target="_blank">원문 링크 →</a>
               </div>
             `;
           });
-          const section = document.createElement("div");
-          section.innerHTML = html;
           app.appendChild(section);
         });
       })
