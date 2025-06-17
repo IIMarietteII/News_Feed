@@ -100,7 +100,8 @@
       .then(res => res.json())
       .then(data => {
         const filtered = data.filter(article =>
-          ids.includes(article.id || article.link)
+          ids.includes(article.link) // ← id가 아닌 link로 매칭
+
         );
 
         const grouped = {};
