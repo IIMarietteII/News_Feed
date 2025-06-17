@@ -73,7 +73,7 @@
         const container = document.getElementById('articles');
         container.innerHTML = '';
         data.forEach(article => {
-          const id = encodeURIComponent(article.id || article.link);
+          const id = encodeURIComponent(article.link); // ← 이걸로 변경
           const div = document.createElement('div');
           div.className = "article";
           div.innerHTML = `
