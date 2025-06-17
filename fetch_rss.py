@@ -1,30 +1,63 @@
+
 import feedparser
 import json
-from datetime import datetime
-from feeds import RSS_FEEDS
 import os
+from datetime import datetime, timedelta
+from feeds import RSS_FEEDS
 
-# GitHub Pages에서 접근 가능하도록 docs/data 경로 사용
-output_dir = 'docs/data'
-os.makedirs(output_dir, exist_ok=True)
+SAVE_PATH = 'docs/data/articles.json'
 
-articles = []
+# Load existing articles
+if os.path.exists(SAVE_PATH):
+    with open(SAVE_PATH, 'r', encoding='utf-8') as f:
+        existing_articles = json.load(f)
+else:
+    existing_articles = []
 
+existing_ids = {item['id'] for item in existing_articles}
+
+# Fetch new articles
+new_articles = []
 for source, url in RSS_FEEDS.items():
     feed = feedparser.parse(url)
-    for entry in feed.entries[:10]:  # 각 피드당 최대 10개
-        articles.append({
-            "id": entry.id if "id" in entry else entry.link,
-            "title": entry.title,
-            "link": entry.link,
-            "summary": entry.summary if "summary" in entry else "",
-            "published": entry.published if "published" in entry else "",
-            "source": source
-        })
+    for entry in feed.entries:
+        article_id = entry.get('id', entry.get('link'))
+        if article_id not in existing_ids:
+            published = entry.get('published', datetime.utcnow().isoformat())
+            try:
+                published_dt = datetime.strptime(published[:19], '%Y-%m-%dT%H:%M:%S')
+            except ValueError:
+                try:
+                    published_dt = datetime.strptime(published, '%a, %d %b %Y %H:%M:%S %Z')
+                    published = published_dt.isoformat()
+                except Exception:
+                    published_dt = datetime.utcnow()
+                    published = published_dt.isoformat()
+            new_articles.append({
+                'id': article_id,
+                'title': entry.get('title', ''),
+                'link': entry.get('link', ''),
+                'summary': entry.get('summary', ''),
+                'published': published,
+                'source': source
+            })
 
-# JSON 파일 저장 위치 변경됨
-output_path = os.path.join(output_dir, 'articles.json')
-with open(output_path, 'w', encoding='utf-8') as f:
-    json.dump(articles, f, ensure_ascii=False, indent=2)
+# Merge and filter to past 7 days
+merged_articles = existing_articles + new_articles
+seven_days_ago = datetime.utcnow() - timedelta(days=7)
 
-print(f"Saved {len(articles)} articles to {output_path}")
+filtered_articles = []
+for article in merged_articles:
+    try:
+        pub_dt = datetime.strptime(article['published'][:19], '%Y-%m-%dT%H:%M:%S')
+        if pub_dt > seven_days_ago:
+            filtered_articles.append(article)
+    except Exception as e:
+        continue  # skip if published date is malformed
+
+# Save
+os.makedirs(os.path.dirname(SAVE_PATH), exist_ok=True)
+with open(SAVE_PATH, 'w', encoding='utf-8') as f:
+    json.dump(filtered_articles, f, ensure_ascii=False, indent=2)
+
+print(f"✔ {len(new_articles)} new articles added. Total stored: {len(filtered_articles)}")
