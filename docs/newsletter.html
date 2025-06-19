@@ -98,7 +98,7 @@
       .then(res => res.json())
       .then(data => {
         const filtered = data.filter(article =>
-          ids.includes(article.id)
+          ids.includes(article.link)
         );
 
       const grouped = {
