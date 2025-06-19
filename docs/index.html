@@ -78,7 +78,7 @@
         container.innerHTML = '';
 
         data.forEach(article => {
-          const id = encodeURIComponent(article.link);  // ✅ 확실한 고유값
+          const id = article.link;  // 🔥 인코딩 없이 원본 링크 그대로
           const source = article.source || '기타';
           const date = article.published?.slice(0, 10) || '날짜없음';
 
