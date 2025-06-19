@@ -8,12 +8,11 @@
       margin: 0;
       padding: 0;
       font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
-      line-height: 1.6;
       background-color: #f4f4f4;
       color: #333;
     }
     .container {
-      max-width: 600px;
+      max-width: 800px;
       margin: 0 auto;
       background: #fff;
       padding: 20px;
@@ -22,10 +21,28 @@
       text-align: center;
       color: #2c64b4;
     }
-    .article {
-      margin: 10px 0;
-      border-bottom: 1px solid #ddd;
-      padding-bottom: 10px;
+    .article-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 0;
+      border-bottom: 1px solid #eee;
+      font-size: 14px;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+    .article-row input {
+      margin-right: 8px;
+    }
+    .article-meta {
+      flex-shrink: 0;
+      color: #777;
+      width: 160px;
+    }
+    .article-title {
+      flex-grow: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     button {
       margin-top: 20px;
@@ -46,25 +63,12 @@
 </head>
 <body>
   <div class="container">
-    <h1 id="dynamic-title">뉴스 기사 선택</h1>
+    <h1>뉴스 기사 선택</h1>
     <div id="articles">불러오는 중...</div>
     <button id="view-newsletter">선택한 기사로 뉴스레터 만들기</button>
   </div>
 
   <script>
-    // ✅ 동적으로 오늘 날짜 기반 제목 생성
-    const kstFormatter = new Intl.DateTimeFormat("ko-KR", {
-      timeZone: "Asia/Seoul",
-      year: "numeric",
-      month: "numeric",
-      day: "numeric",
-      weekday: "short",
-    });
-    const parts = kstFormatter.formatToParts(new Date());
-    const dateStr = `${parts.find(p => p.type === "month").value}월 ${parts.find(p => p.type === "day").value}일 ${parts.find(p => p.type === "weekday").value}`;
-    document.getElementById("dynamic-title").innerText = `${dateStr} 뉴스 기사 선택`;
-
-    // ✅ 뉴스 기사 로딩
     let selected = [];
 
     fetch('data/articles.json')
@@ -72,21 +76,26 @@
       .then(data => {
         const container = document.getElementById('articles');
         container.innerHTML = '';
+
         data.forEach(article => {
-          const id = encodeURIComponent(article.link); // ← 이걸로 변경
+          const id = encodeURIComponent(article.id || article.link);
+          const source = article.source || '기타';
+          const date = article.published?.slice(0, 10) || '날짜없음';
+
           const div = document.createElement('div');
-          div.className = "article";
+          div.className = "article-row";
           div.innerHTML = `
-            <label>
+            <label style="display: flex; align-items: center; width: 100%;">
               <input type="checkbox" value="${id}">
-              <strong>${article.title}</strong><br>
-              <em>${article.source}</em> | <small>${article.published}</small>
+              <span class="article-meta">${source} | ${date}</span>
+              <span class="article-title">${article.title}</span>
             </label>
           `;
           container.appendChild(div);
         });
 
-        document.querySelectorAll('input[type=checkbox]').forEach(input => {
+        // 체크박스 선택 추적
+        container.querySelectorAll('input[type=checkbox]').forEach(input => {
           input.addEventListener('change', e => {
             if (e.target.checked) selected.push(e.target.value);
             else selected = selected.filter(id => id !== e.target.value);
@@ -98,7 +107,6 @@
         console.error(err);
       });
 
-    // ✅ 뉴스레터 만들기 버튼 동작
     document.getElementById('view-newsletter').addEventListener('click', () => {
       if (selected.length === 0) {
         alert("최소 하나의 기사를 선택해주세요.");
