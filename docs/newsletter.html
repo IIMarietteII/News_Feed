@@ -97,17 +97,21 @@
     fetch('data/articles.json')
       .then(res => res.json())
       .then(data => {
-        const filtered = data.filter(article =>
-          ids.includes(article.link)
-        );
+        const filtered = data.filter(article => {
+          const match = ids.includes(article.link);
+          console.log("비교 중:", {
+            link: article.link,
+            matched: match
+          });
+          return match;
+        });
 
-      const grouped = {
-        "K_Entertainment": [],
-        "K_OTT": [],
-        "AI": [],
-        "News": []
-      };
-
+        const grouped = {
+          "K_Entertainment": [],
+          "K_OTT": [],
+          "AI": [],
+          "News": []
+        };
 
         filtered.forEach(article => {
           const source = article.source?.trim();
