@@ -80,7 +80,6 @@
     </div>
   </div>
   <script>
-    // 날짜 표시
     const kstFormatter = new Intl.DateTimeFormat("ko-KR", {
       timeZone: "Asia/Seoul",
       year: "numeric",
@@ -92,7 +91,6 @@
     const formatted = `${parts.find(p => p.type === "year").value}년 ${parts.find(p => p.type === "month").value}월 ${parts.find(p => p.type === "day").value}일 (${parts.find(p => p.type === "weekday").value})`;
     document.getElementById("page-date").innerText = formatted;
 
-    // 선택된 기사 ID 가져오기
     const params = new URLSearchParams(location.search);
     const ids = (params.get('ids') || '').split(',').map(decodeURIComponent);
 
@@ -100,15 +98,28 @@
       .then(res => res.json())
       .then(data => {
         const filtered = data.filter(article =>
-          ids.includes(article.link) // ← id가 아닌 link로 매칭
-
+          ids.includes(article.id)
         );
 
-        const grouped = {};
+        const grouped = {
+          "Google 드라마제작": [],
+          "Google AI콘텐츠": [],
+          "Google K드라마": [],
+          "Google OTT": [],
+          "Google 한류": [],
+          "Google 예능콘텐츠": [],
+          "Google 네고왕": [],
+          "Google 드라마투자": [],
+          "Korea": [],
+          "Global": [],
+          "A+E": []
+        };
+
         filtered.forEach(article => {
-          const source = article.source?.trim() || "기타";
-          if (!grouped[source]) grouped[source] = [];
-          grouped[source].push(article);
+          const source = article.source?.trim();
+          if (grouped[source]) {
+            grouped[source].push(article);
+          }
         });
 
         const app = document.getElementById("app");
@@ -116,10 +127,9 @@
         Object.entries(grouped).forEach(([source, articles]) => {
           if (articles.length === 0) return;
 
-          const safeSource = source.replace(/[<>&"]/g, ''); // HTML 안전 처리
           const section = document.createElement("div");
           section.className = "section";
-          section.innerHTML = `<h2 class="section-title">${safeSource}</h2>`;
+          section.innerHTML = `<h2 class="section-title">${source}</h2>`;
 
           articles.forEach(article => {
             section.innerHTML += `
