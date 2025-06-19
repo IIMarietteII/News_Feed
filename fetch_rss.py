@@ -13,7 +13,7 @@ if os.path.exists(SAVE_PATH):
 else:
     existing_articles = []
 
-# Use article.link as the unique ID
+# Use article.id (RSS native ID)
 existing_ids = {item['id'] for item in existing_articles}
 
 # Fetch new articles
@@ -21,7 +21,7 @@ new_articles = []
 for source, url in RSS_FEEDS.items():
     feed = feedparser.parse(url)
     for entry in feed.entries:
-        article_id = entry.get('link')  # ✅ Use link as unique ID
+        article_id = entry.get('id', entry.get('link'))  # ✅ Restore original ID
 
         if article_id not in existing_ids:
             published = entry.get('published', datetime.utcnow().isoformat())
@@ -36,7 +36,7 @@ for source, url in RSS_FEEDS.items():
                     published = published_dt.isoformat()
 
             new_articles.append({
-                'id': article_id,  # ✅ ID is the link
+                'id': article_id,
                 'title': entry.get('title', ''),
                 'link': entry.get('link', ''),
                 'summary': entry.get('summary', ''),
@@ -44,7 +44,7 @@ for source, url in RSS_FEEDS.items():
                 'source': source
             })
 
-# Merge and keep only the most recent 7 days
+# Merge and filter to past 7 days
 merged_articles = existing_articles + new_articles
 seven_days_ago = datetime.utcnow() - timedelta(days=7)
 
@@ -57,7 +57,7 @@ for article in merged_articles:
     except Exception:
         continue  # skip if date parsing fails
 
-# Save updated article list
+# Save
 os.makedirs(os.path.dirname(SAVE_PATH), exist_ok=True)
 with open(SAVE_PATH, 'w', encoding='utf-8') as f:
     json.dump(filtered_articles, f, ensure_ascii=False, indent=2)
