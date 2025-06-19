@@ -41,7 +41,7 @@ for source, urls in RSS_FEEDS.items():
         for entry in feed.entries:
             raw_link = entry.get('link', '')
             real_link = extract_real_url(raw_link)
-            article_id = real_link
+            article_id = real_link  # use cleaned real URL
 
             if article_id not in existing_ids:
                 published = entry.get('published', datetime.utcnow().isoformat())
@@ -64,7 +64,7 @@ for source, urls in RSS_FEEDS.items():
                     'source': source
                 })
 
-# Merge and filter for past 7 days
+# Merge and filter to past 7 days
 merged_articles = existing_articles + new_articles
 seven_days_ago = datetime.utcnow() - timedelta(days=7)
 
