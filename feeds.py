@@ -1,9 +1,9 @@
 RSS_FEEDS = {
-    "Korea_Entertainment_Contents": [
+    "K_Entertainment": [
         "https://www.google.com/alerts/feeds/09227588750988725930/5874155639261198456",
         "https://www.google.com/alerts/feeds/09227588750988725930/8594056422529263421"
     ],
-    "Korea_OTT": [
+    "K_OTT": [
         "https://www.google.com/alerts/feeds/09227588750988725930/18115601270859787318",
         "https://www.google.com/alerts/feeds/09227588750988725930/15054667442391058200",
         "https://www.google.com/alerts/feeds/09227588750988725930/15054667442391059191",
