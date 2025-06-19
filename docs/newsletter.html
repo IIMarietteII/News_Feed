@@ -101,19 +101,13 @@
           ids.includes(article.id)
         );
 
-        const grouped = {
-          "Google 드라마제작": [],
-          "Google AI콘텐츠": [],
-          "Google K드라마": [],
-          "Google OTT": [],
-          "Google 한류": [],
-          "Google 예능콘텐츠": [],
-          "Google 네고왕": [],
-          "Google 드라마투자": [],
-          "Korea": [],
-          "Global": [],
-          "A+E": []
-        };
+      const grouped = {
+        "Korea_Entertainment_Contents": [],
+        "Korea_OTT": [],
+        "AI": [],
+        "News": []
+      };
+
 
         filtered.forEach(article => {
           const source = article.source?.trim();
