@@ -106,6 +106,7 @@
           "News": []
         };
 
+        // 그룹핑
         filtered.forEach(article => {
           const source = article.source?.trim();
           if (grouped[source]) {
@@ -115,10 +116,11 @@
 
         const app = document.getElementById("app");
 
+        // 섹션별 렌더링 (섹션 내에서 날짜 기준 정렬)
         Object.entries(grouped).forEach(([source, articles]) => {
           if (articles.length === 0) return;
 
-          // ✅ 날짜 (YYYY-MM-DD) 기준 정렬
+          // 🔽 날짜 문자열 기준 오름차순 정렬
           articles.sort((a, b) => {
             const da = (a.published || "").trim().slice(0, 10);
             const db = (b.published || "").trim().slice(0, 10);
