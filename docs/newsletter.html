@@ -118,8 +118,16 @@
         Object.entries(grouped).forEach(([source, articles]) => {
           if (articles.length === 0) return;
 
+          console.log(`🗂️ [${source}] 정렬 전`);
+          articles.forEach(a => console.log(a.published, a.title));
+
           // ✅ 날짜 오름차순 정렬
-          articles.sort((a, b) => new Date(a.published) - new Date(b.published));
+          articles.sort((a, b) =>
+            new Date((a.published || "").trim()) - new Date((b.published || "").trim())
+          );
+
+          console.log(`✅ [${source}] 정렬 후`);
+          articles.forEach(a => console.log(a.published, a.title));
 
           const section = document.createElement("div");
           section.className = "section";
