@@ -97,14 +97,7 @@
     fetch('data/articles.json')
       .then(res => res.json())
       .then(data => {
-        const filtered = data.filter(article => {
-          const match = ids.includes(article.link);
-          console.log("비교 중:", {
-            link: article.link,
-            matched: match
-          });
-          return match;
-        });
+        const filtered = data.filter(article => ids.includes(article.link));
 
         const grouped = {
           "K_Entertainment": [],
@@ -124,6 +117,9 @@
 
         Object.entries(grouped).forEach(([source, articles]) => {
           if (articles.length === 0) return;
+
+          // ✅ 날짜 오름차순 정렬
+          articles.sort((a, b) => new Date(a.published) - new Date(b.published));
 
           const section = document.createElement("div");
           section.className = "section";
