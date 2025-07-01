@@ -119,10 +119,10 @@
         Object.entries(grouped).forEach(([source, articles]) => {
           if (articles.length === 0) return;
 
-          // ✅ 정확한 날짜 기준 정렬
+          // 🔥 정확한 published 날짜 기준 정렬 (Date 객체 기준)
           articles.sort((a, b) => {
-            const da = new Date((a.published || "").trim());
-            const db = new Date((b.published || "").trim());
+            const da = new Date(a.published || "");
+            const db = new Date(b.published || "");
             return da - db;
           });
 
