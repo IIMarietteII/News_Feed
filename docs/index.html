@@ -21,21 +21,23 @@
       text-align: center;
       color: #2c64b4;
     }
+    h2 {
+      font-size: 18px;
+      margin-top: 30px;
+      border-bottom: 2px solid #2c64b4;
+      padding-bottom: 5px;
+      color: #2c64b4;
+    }
     .article-row {
       display: flex;
       align-items: center;
       font-size: 14px;
-      padding: 10px 0;
+      padding: 8px 0;
       border-bottom: 1px solid #eee;
       gap: 10px;
     }
     .article-row input {
       flex-shrink: 0;
-    }
-    .article-source {
-      flex-shrink: 0;
-      width: 120px;
-      color: #666;
     }
     .article-title {
       flex-grow: 1;
@@ -86,28 +88,52 @@
     fetch('data/articles.json')
       .then(res => res.json())
       .then(data => {
+        const grouped = {
+          "K_Entertainment": [],
+          "K_OTT": [],
+          "AI": [],
+          "News": []
+        };
+
+        // 그룹별로 기사 분류
+        data.forEach(article => {
+          const source = article.source?.trim();
+          if (grouped[source]) {
+            grouped[source].push(article);
+          }
+        });
+
         const container = document.getElementById('articles');
         container.innerHTML = '';
 
-        data.forEach(article => {
-          const id = article.link;
-          const source = article.source || "기타";
-          const date = (article.published || "").slice(0, 10);
-          const title = article.title || "";
-          const link = article.link || "#";
+        Object.entries(grouped).forEach(([group, articles]) => {
+          if (articles.length === 0) return;
 
-          const div = document.createElement('div');
-          div.className = "article-row";
-          div.innerHTML = `
-            <input type="checkbox" value="${id}">
-            <div class="article-source">${source}</div>
-            <div class="article-title">
-              <a href="${link}" target="_blank" style="color:inherit; text-decoration:none;">${title}</a>
-            </div>
-            <div class="article-date">${date}</div>
-            <div class="article-link"><a href="${link}" target="_blank">링크 →</a></div>
-          `;
-          container.appendChild(div);
+          // 날짜 오름차순 정렬
+          articles.sort((a, b) => new Date(a.published) - new Date(b.published));
+
+          const sectionTitle = document.createElement('h2');
+          sectionTitle.textContent = group;
+          container.appendChild(sectionTitle);
+
+          articles.forEach(article => {
+            const id = article.link;
+            const date = (article.published || "").slice(0, 10);
+            const title = article.title || "";
+            const link = article.link || "#";
+
+            const div = document.createElement('div');
+            div.className = "article-row";
+            div.innerHTML = `
+              <input type="checkbox" value="${id}">
+              <div class="article-title">
+                <a href="${link}" target="_blank" style="color:inherit; text-decoration:none;">${title}</a>
+              </div>
+              <div class="article-date">${date}</div>
+              <div class="article-link"><a href="${link}" target="_blank">링크 →</a></div>
+            `;
+            container.appendChild(div);
+          });
         });
 
         // 체크박스 선택 추적
