@@ -12,7 +12,7 @@
       color: #333;
     }
     .container {
-      max-width: 800px;
+      max-width: 900px;
       margin: 0 auto;
       background: #fff;
       padding: 20px;
@@ -24,25 +24,37 @@
     .article-row {
       display: flex;
       align-items: center;
-      gap: 12px;
-      padding: 8px 0;
-      border-bottom: 1px solid #eee;
       font-size: 14px;
-      white-space: nowrap;
-      overflow: hidden;
+      padding: 10px 0;
+      border-bottom: 1px solid #eee;
+      gap: 10px;
     }
     .article-row input {
-      margin-right: 8px;
-    }
-    .article-meta {
       flex-shrink: 0;
-      color: #777;
-      width: 220px;
+    }
+    .article-source {
+      flex-shrink: 0;
+      width: 120px;
+      color: #666;
     }
     .article-title {
       flex-grow: 1;
       overflow: hidden;
+      white-space: nowrap;
       text-overflow: ellipsis;
+    }
+    .article-date {
+      flex-shrink: 0;
+      width: 100px;
+      color: #888;
+    }
+    .article-link {
+      flex-shrink: 0;
+    }
+    .article-link a {
+      font-size: 13px;
+      color: #2c64b4;
+      text-decoration: none;
     }
     button {
       margin-top: 20px;
@@ -78,22 +90,22 @@
         container.innerHTML = '';
 
         data.forEach(article => {
-          const id = article.link;  // 🔥 인코딩 없이 원본 링크 그대로
-          const source = article.source || '기타';
-          const date = article.published?.slice(0, 10) || '날짜없음';
+          const id = article.link;
+          const source = article.source || "기타";
+          const date = (article.published || "").slice(0, 10);
+          const title = article.title || "";
+          const link = article.link || "#";
 
           const div = document.createElement('div');
           div.className = "article-row";
           div.innerHTML = `
-            <label style="display: flex; align-items: center; width: 100%;">
-              <input type="checkbox" value="${id}">
-              <span class="article-meta">${source} | ${date}</span>
-              <span class="article-title">
-                <a href="${article.link}" target="_blank" style="color:inherit; text-decoration:none;">
-                  ${article.title}
-                </a>
-              </span>
-            </label>
+            <input type="checkbox" value="${id}">
+            <div class="article-source">${source}</div>
+            <div class="article-title">
+              <a href="${link}" target="_blank" style="color:inherit; text-decoration:none;">${title}</a>
+            </div>
+            <div class="article-date">${date}</div>
+            <div class="article-link"><a href="${link}" target="_blank">링크 →</a></div>
           `;
           container.appendChild(div);
         });
@@ -116,7 +128,7 @@
         alert("최소 하나의 기사를 선택해주세요.");
         return;
       }
-      location.href = `newsletter.html?ids=${selected.join(',')}`;
+      location.href = `newsletter.html?ids=${selected.map(encodeURIComponent).join(',')}`;
     });
   </script>
 </body>
