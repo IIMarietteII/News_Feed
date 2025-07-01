@@ -95,7 +95,6 @@
           "News": []
         };
 
-        // 그룹별로 기사 분류
         data.forEach(article => {
           const source = article.source?.trim();
           if (grouped[source]) {
@@ -109,7 +108,6 @@
         Object.entries(grouped).forEach(([group, articles]) => {
           if (articles.length === 0) return;
 
-          // 날짜 오름차순 정렬
           articles.sort((a, b) => new Date(a.published) - new Date(b.published));
 
           const sectionTitle = document.createElement('h2');
@@ -126,9 +124,7 @@
             div.className = "article-row";
             div.innerHTML = `
               <input type="checkbox" value="${id}">
-              <div class="article-title">
-                <a href="${link}" target="_blank" style="color:inherit; text-decoration:none;">${title}</a>
-              </div>
+              <div class="article-title">${title}</div>
               <div class="article-date">${date}</div>
               <div class="article-link"><a href="${link}" target="_blank">링크 →</a></div>
             `;
@@ -136,7 +132,6 @@
           });
         });
 
-        // 체크박스 선택 추적
         container.querySelectorAll('input[type=checkbox]').forEach(input => {
           input.addEventListener('change', e => {
             if (e.target.checked) selected.push(e.target.value);
