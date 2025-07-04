@@ -64,6 +64,10 @@ for source, urls in RSS_FEEDS.items():
                     'source': source
                 })
 
+# ✅ KCTA 기사 추가
+from kcta_scraper import fetch_kcta_articles
+new_articles += fetch_kcta_articles() 
+
 # Merge and filter to past 7 days
 merged_articles = existing_articles + new_articles
 seven_days_ago = datetime.utcnow() - timedelta(days=7)
